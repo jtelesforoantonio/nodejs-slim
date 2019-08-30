@@ -1,0 +1,20 @@
+{
+  "name": "@jtelesforoantonio/nodejs-slim",
+  "version": "1.0.0",
+  "description": "Slim micro framework for node.js",
+  "main": "index.js",
+  "keywords": [
+    "slim",
+    "framework",
+    "nodejs",
+    "js",
+    "javascript"
+  ],
+  "author": "Jonathan Telesforo Antonio",
+  "license": "MIT",
+  "dependencies": {
+    "merge-descriptors": "^1.0.1",
+    "path-to-regexp": "^3.0.0",
+    "setprototypeof": "^1.2.0"
+  }
+}
