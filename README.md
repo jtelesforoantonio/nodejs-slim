@@ -64,14 +64,20 @@ route.get('users/:id?', function(req, res, id) {
 
 ## Views
 
-Install Twig for views.
+You can use Twig or Handlebars for templates
 ```shell
 npm install twig --save
+npm install handlebars --save
 ```
 
 Set the config for use twig.
 ```javascript
+//to use Twig engine
 app.setEngine('twig');
+
+//to use handlebars
+app.setEngine('hbs');
+
 app.setViewsDir('./path_to_views_directory');
 ```
 

@@ -7,12 +7,10 @@
  */
 const setPrototypeOf = require('setprototypeof');
 const merge = require('merge-descriptors');
-const view = require('./view');
 const request = require('./request');
 const response = require('./response');
 const route = require('./route');
-
-const templatesEngines = ['twig'];
+const view = require('./view');
 
 /**
  * Slim app.
@@ -27,7 +25,7 @@ const slim = {};
  * @param {string} directory
  */
 slim.setViewsDir = function (directory) {
-    this.viewsDir = directory;
+    view.setViewsDir(directory);
 };
 
 /**
@@ -36,26 +34,7 @@ slim.setViewsDir = function (directory) {
  * @param {string} engine
  */
 slim.setEngine = function (engine) {
-    if (templatesEngines.includes(engine)) {
-        this.engine = engine;
-    } else {
-        throw new Error(`${engine} not supported yet`);
-    }
-};
-
-/**
- * Render a view.
- *
- * @param {string} name
- * @param {object} data
- * @param {function} callback
- */
-slim.view = function (name, data, callback) {
-    if (name.includes('.')) {
-        name = name.replace('.', '/');
-    }
-    let path = `${this.viewsDir}/${name}.${this.engine}`;
-    view.render(path, data, callback);
+    view.setEngine(engine);
 };
 
 /**
@@ -78,5 +57,3 @@ function init() {
 
 exports = module.exports = init;
 exports.route = route;
-exports.request = request;
-exports.response = response;

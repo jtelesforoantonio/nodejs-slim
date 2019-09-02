@@ -1,15 +1,14 @@
 const url = require('url');
 const pathToRegexp = require('path-to-regexp');
 
+const route = {};
+const routes = [];
 const httpVerbs = [
     'get',
     'post',
     'put',
     'delete'
 ];
-
-const route = {};
-const routes = [];
 
 httpVerbs.forEach(function (verb) {
     route[verb] = function () {
@@ -35,10 +34,7 @@ httpVerbs.forEach(function (verb) {
 function getUriParams(keys, data) {
     let params = [];
     for (let i = 1; i < data.length; i++) {
-        let key = keys[i - 1];
-        let prop = key.name;
         let val = data[i];
-
         if (val !== undefined) {
             params.push(val);
         } else {

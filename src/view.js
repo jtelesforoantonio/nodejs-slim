@@ -1,28 +1,54 @@
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * Engines available.
+ *
+ * @type {*[]}
+ */
+const templatesEngines = ['twig', 'hbs'];
+
+/**
+ * View.
+ *
+ * @type {{}}
+ */
 const view = {};
 
 /**
- * Render a view.
+ * Set views directory.
  *
- * @param {string} path
- * @param {object} data
- * @param {function} callback
+ * @param {string} directory
  */
-view.render = function (path, data, callback) {
-    let fileInfo = getFileInfo(path);
-    if(fileInfo.isFile()) {
-        switch (fileInfo.extname) {
-            case '.twig':
-                require('twig').renderFile(path, data, callback);
-                break;
-            default:
-                throw new Error('engine not supported');
-        }
+view.setViewsDir = function (directory) {
+    this.viewsDir = directory;
+};
+
+/**
+ * Set template engine.
+ *
+ * @param {string} engine
+ */
+view.setEngine = function (engine) {
+    if (templatesEngines.includes(engine)) {
+        this.engine = engine;
     } else {
-        throw new Error(`${path} is not a file`);
+        throw new Error(`${engine} not supported yet`);
     }
+};
+
+/**
+ * Return the full path of a view.
+ *
+ * @param {string} name
+ * @return {string}
+ */
+view.generatePath = function (name) {
+    if (name.includes('.')) {
+        name = name.replace('.', '/');
+    }
+
+    return `${this.viewsDir}/${name}.${this.engine}`;
 };
 
 /**
@@ -31,7 +57,7 @@ view.render = function (path, data, callback) {
  * @param {string} file
  * @returns {Stats}
  */
-function getFileInfo(file) {
+view.getFileInfo = function (file) {
     try {
         let fileInfo = fs.statSync(file);
         fileInfo.extname = path.extname(file);
@@ -39,6 +65,52 @@ function getFileInfo(file) {
     } catch (e) {
         throw e;
     }
-}
+};
+
+/**
+ * Render a view.
+ *
+ * @param {string} name
+ * @param {object} data
+ * @param {function} callback
+ */
+view.render = function (name, data, callback) {
+    let path = this.generatePath(name);
+    let fileInfo = this.getFileInfo(path);
+    if (fileInfo.isFile()) {
+        switch (fileInfo.extname) {
+            case '.twig':
+                require('twig').renderFile(path, data, callback);
+                break;
+            case '.hbs':
+                let err = undefined;
+                let html = undefined;
+                try {
+                    const handlebars = require('handlebars');
+                    let viewSource = fs.readFileSync(path, {encoding: 'utf8'});
+                    let viewCompile = handlebars.compile(viewSource);
+                    html = viewCompile(data);
+                    let layoutPath = `${this.viewsDir}/template.${this.engine}`;
+                    if (fs.existsSync(layoutPath)) {
+                        let layoutSource = fs.readFileSync(layoutPath, {encoding: 'utf8'});
+                        let layoutCompile = handlebars.compile(layoutSource);
+                        let layoutData = {
+                            body: html,
+                            ...data
+                        };
+                        html = layoutCompile(layoutData);
+                    }
+                } catch (e) {
+                    err = e.message;
+                }
+                callback.call(null, err, html);
+                break;
+            default:
+                throw new Error('engine not supported');
+        }
+    } else {
+        throw new Error(`${path} is not a file`);
+    }
+};
 
 module.exports = view;

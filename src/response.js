@@ -1,4 +1,5 @@
 const http = require('http');
+const view = require('./view');
 
 /**
  * Request.
@@ -10,11 +11,11 @@ const res = Object.create(http.ServerResponse.prototype);
 /**
  * Render a view.
  *
- * @param {string} view
+ * @param {string} name
  * @param {object} data
  * @param {function} callback
  */
-res.view = function (view, data, callback) {
+res.view = function (name, data, callback) {
     const self = this;
     let fn = callback || function(err, chunk) {
         if (err) throw err;
@@ -23,7 +24,8 @@ res.view = function (view, data, callback) {
     if (typeof fn !== 'function') {
         throw new TypeError('callback function required');
     }
-    this.app.view(view, data, fn);
+
+    view.render(name, data, fn);
 };
 
 module.exports = res;
