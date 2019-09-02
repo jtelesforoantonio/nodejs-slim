@@ -6,7 +6,7 @@ const path = require('path');
  *
  * @type {*[]}
  */
-const templatesEngines = ['twig', 'hbs'];
+const templatesEngines = ['twig', 'hbs', 'pug'];
 
 /**
  * View.
@@ -68,6 +68,56 @@ view.getFileInfo = function (file) {
 };
 
 /**
+ * Render Handlebar template.
+ * @param path
+ * @param data
+ * @param callback
+ */
+view.renderHbsTemplate = function (path, data, callback) {
+    let err = undefined;
+    let html = undefined;
+    try {
+        const handlebars = require('handlebars');
+        let viewSource = fs.readFileSync(path, {encoding: 'utf8'});
+        let viewCompile = handlebars.compile(viewSource);
+        html = viewCompile(data);
+        let layoutPath = `${this.viewsDir}/template.${this.engine}`;
+        if (fs.existsSync(layoutPath)) {
+            let layoutSource = fs.readFileSync(layoutPath, {encoding: 'utf8'});
+            let layoutCompile = handlebars.compile(layoutSource);
+            let layoutData = {
+                body: html,
+                ...data
+            };
+            html = layoutCompile(layoutData);
+        }
+    } catch (e) {
+        err = e.message;
+    }
+    callback.call(null, err, html);
+};
+
+/**
+ * Render Pug template.
+ *
+ * @param path
+ * @param data
+ * @param callback
+ */
+view.renderPugTemplate = function (path, data, callback) {
+    let err = undefined;
+    let html = undefined;
+    try {
+        const pug = require('pug');
+        let viewCompile = pug.compileFile(path);
+        html = viewCompile(data);
+    } catch (e) {
+        err = e.message;
+    }
+    callback.call(null, err, html);
+};
+
+/**
  * Render a view.
  *
  * @param {string} name
@@ -83,27 +133,10 @@ view.render = function (name, data, callback) {
                 require('twig').renderFile(path, data, callback);
                 break;
             case '.hbs':
-                let err = undefined;
-                let html = undefined;
-                try {
-                    const handlebars = require('handlebars');
-                    let viewSource = fs.readFileSync(path, {encoding: 'utf8'});
-                    let viewCompile = handlebars.compile(viewSource);
-                    html = viewCompile(data);
-                    let layoutPath = `${this.viewsDir}/template.${this.engine}`;
-                    if (fs.existsSync(layoutPath)) {
-                        let layoutSource = fs.readFileSync(layoutPath, {encoding: 'utf8'});
-                        let layoutCompile = handlebars.compile(layoutSource);
-                        let layoutData = {
-                            body: html,
-                            ...data
-                        };
-                        html = layoutCompile(layoutData);
-                    }
-                } catch (e) {
-                    err = e.message;
-                }
-                callback.call(null, err, html);
+                this.renderHbsTemplate(path, data, callback);
+                break;
+            case '.pug':
+                this.renderPugTemplate(path, data, callback);
                 break;
             default:
                 throw new Error('engine not supported');

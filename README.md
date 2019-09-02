@@ -64,25 +64,30 @@ route.get('users/:id?', function(req, res, id) {
 
 ## Views
 
-You can use Twig or Handlebars for templates
+You can use Pug, Twig or Handlebars.
 ```shell
+npm install pug --save
 npm install twig --save
 npm install handlebars --save
 ```
 
-Set the config for use twig.
+Set the config.
 ```javascript
+app.setViewsDir('./path_to_views_directory');
+
+//to use Pug engine
+app.setEngine('pug');
+
 //to use Twig engine
 app.setEngine('twig');
 
 //to use handlebars
 app.setEngine('hbs');
 
-app.setViewsDir('./path_to_views_directory');
 ```
 
 Render a view, the first param is the view name and the second is the data,
-you can use dot notation for nested views
+you can use dot notation for nested views.
 ```javascript
 route.get('/user/:name', function(req, res, name) {
     let data = { name: name };
@@ -97,7 +102,7 @@ route.get('/user/:name', function(req, res, name) {
 
 ## Request
 
-The request param has two functions req.all() and req.input() to get the data
+The request param has two functions req.all() and req.input() to get the data.
 ```javascript
 route.post('/users', function(req, res) {
     // get all data
