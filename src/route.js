@@ -17,11 +17,14 @@ httpVerbs.forEach(function (verb) {
         let regexp = pathToRegexp(handles[0], keys);
         routes.push({
             uri: handles[0],
+            name: this.routeName,
             uriRegexp: regexp,
             keysRegexp: keys,
             method: verb.toUpperCase(),
             action: handles[1]
         });
+
+        return this;
     };
 });
 
@@ -44,6 +47,15 @@ function getUriParams(keys, data) {
 
     return params;
 }
+
+/**
+ * Set route name.
+ *
+ * @param name
+ */
+route.name = function (name) {
+    routes[routes.length - 1]['name'] = name;
+};
 
 route.dispatch = function (req, res) {
     routes.forEach(function (r) {

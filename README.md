@@ -62,6 +62,13 @@ route.get('users/:id?', function(req, res, id) {
 });
 ```
 
+For route name use
+```javascript
+route.get('/', function (req, res) {
+    //do something
+}).name('my_route_name');
+```
+
 ## Views
 
 You can use Pug, Twig or Handlebars.
@@ -110,6 +117,32 @@ route.post('/users', function(req, res) {
     // get a specific value, the first parameter is the key name and the second(optional) is the default value,
     // the default value will be return if the key not exists otherwise null
     let value = req.input('key', 'default_value');  
+});
+```
+
+## Redirects
+
+Basic redirect.
+```javascript
+route.post('/users', function(req, res) {
+    res.redirect('/some/place');
+});
+```
+
+Redirect using routes names.
+```javascript
+route.post('/users', function(req, res) {
+    res.route('route.name');
+});
+
+//if the route name require values you can pass an array with the values as second parameter.
+route.get('/users/:id/show', function(req, res, id) {
+    res.write(id);
+    res.end();
+}).name('users.show');
+
+route.post('/users', function(req, res) {
+    res.route('users.show', [1]);
 });
 ```
 

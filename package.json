@@ -1,6 +1,6 @@
 {
   "name": "@jtelesforoantonio/nodejs-slim",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Slim micro framework for node.js",
   "main": "index.js",
   "keywords": [
