@@ -58,22 +58,28 @@ route.name = function (name) {
 };
 
 route.dispatch = function (req, res) {
-    routes.forEach(function (r) {
-        let currentUrl = url.parse(req.url);
-        let match = r.uriRegexp.exec(currentUrl.pathname);
-        if (match && r.method === req.method) {
-            let uriParams = getUriParams(r.keysRegexp, match);
-            const data = [];
-            req.on('data', function (chunk) {
-                data.push(chunk);
-            });
-            req.on('end', function () {
-                req.uriParams = uriParams;
-                req.rawBody = Buffer.concat(data).toString();
-                req.formatBody();
-                r.action.apply(null, [req, res].concat(uriParams));
-            });
+    const data = [];
+    const currentUrl = url.parse(req.url);
+    let currentMethod = req.method;
+
+    req.on('data', function (chunk) {
+        data.push(chunk);
+    });
+
+    req.on('end', function () {
+        req.rawBody = Buffer.concat(data).toString();
+        req.formatBody();
+        let otherMethod = req.input('_method');
+        if (otherMethod != null) {
+            currentMethod = otherMethod.toUpperCase();
         }
+        routes.forEach(function (r) {
+            let match = r.uriRegexp.exec(currentUrl.pathname);
+            if (match && r.method === currentMethod) {
+                req.uriParams = getUriParams(r.keysRegexp, match);
+                r.action.apply(null, [req, res].concat(req.uriParams));
+            }
+        });
     });
 };
 

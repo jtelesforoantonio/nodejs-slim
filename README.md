@@ -1,6 +1,6 @@
 # Slim Node.js
 
-Slim is a example of a micro framework for node.js 
+Slim is a example of a micro framework for node.js, this project is only a demo. 
 
 ## Installation
 ```shell

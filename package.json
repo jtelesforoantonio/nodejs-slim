@@ -1,8 +1,7 @@
 {
   "name": "@jtelesforoantonio/nodejs-slim",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Slim micro framework for node.js",
-  "main": "index.js",
   "keywords": [
     "slim",
     "framework",
@@ -10,8 +9,11 @@
     "js",
     "javascript"
   ],
-  "author": "Jonathan Telesforo Antonio",
+  "homepage": "https://github.com/jtelesforoantonio/nodejs-slim#readme",
   "license": "MIT",
+  "author": "Jonathan Telesforo Antonio <jonyjony777@gmail.com>",
+  "main": "index.js",
+  "repository": "github:jtelesforoantonio/nodejs-slim",
   "dependencies": {
     "merge-descriptors": "^1.0.1",
     "path-to-regexp": "^3.0.0",
